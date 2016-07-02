@@ -12,6 +12,8 @@ defmodule FacebookMessenger.Sender do
   """
   @spec send(String.t, String.t) :: HTTPotion.Response.t
   def send(recepient, message) do
+    Logger.debug(url)
+    Logger.debug(json_payload(recepient, message))
     res = manager.post(
       url: url,
       body: json_payload(recepient, message)
