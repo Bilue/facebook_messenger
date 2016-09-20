@@ -23,9 +23,9 @@ defmodule TestBotOne.MessageSenderTest do
   end
 
   test "creates a correct generic template message" do
-    element = %{title: "foo", subtitle: "bar", item_url: "https://www.imaurl.com", image_url: "https://www.imaimageurl.com", buttons: [%{type: "postback", title: "Postback", payload: "First bubble payload"}]}
-    assert FacebookMessenger.Sender.template_payload(1055439761215256, [element]) == 
-    %{recipient: %{id: 1055439761215256}, message: %{attachment: %{type: "template", payload: %{template_type: "generic", elements: [element]}}}}
+    element = %FacebookMessenger.GenericElement{title: "foo", subtitle: "bar", item_url: "https://www.imaurl.com", image_url: "https://www.imaimageurl.com", buttons: [%FacebookMessenger.ElementPostbackButton{type: "postback", title: "Postback", payload: "First bubble payload"}]}
+    FacebookMessenger.Sender.send_template(1055439761215256, [element])
+    assert_received %{body: "{\"recipient\":{\"id\":1055439761215256},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"foo\",\"subtitle\":\"bar\",\"item_url\":\"https://www.imaurl.com\",\"image_url\":\"https://www.imaimageurl.com\",\"buttons\":[{\"type\":\"postback\",\"title\":\"Postback\",\"payload\":\"First bubble payload\"}]}]}}}}", url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"}
   end
 
   test "creates a correct generic template message in json" do
