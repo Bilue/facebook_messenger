@@ -31,5 +31,4 @@ defmodule TestBotOne.MessageSenderTest do
   test "creates a correct generic template message in json" do
     payload = FacebookMessenger.Sender.template_payload(1055439761215256, [])
   end
-
 end

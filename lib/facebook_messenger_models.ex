@@ -44,7 +44,6 @@ defmodule FacebookMessenger.ElementPostbackButton do
   @moduledoc """
   Facebook postback button structure
   """
-
   @derive [Poison.Encoder] 
   defstruct [:type, :title, :payload]
 

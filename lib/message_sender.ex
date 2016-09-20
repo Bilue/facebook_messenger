@@ -31,11 +31,12 @@ defmodule FacebookMessenger.Sender do
   @spec send(String.t, [FacebookMessenger.GenericElement.t]) :: HTTPotion.Response.t
   def send(recepient, elements) do
     Logger.debug(url)
-    Logger.info(template_payload(recepient, elements))
+    Logger.debug(template_payload(recepient, elements))
     res = manager.post(
       url: url,
       body: json_payload(template_payload(recepient, elements))
     )
+    Logger.info("PAYLOAD: #{inspect(json_payload(template_payload(recepient, elements)))}")
     Logger.info("response from FB #{inspect(res)}")
     res
   end
