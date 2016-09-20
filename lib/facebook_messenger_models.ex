@@ -27,18 +27,63 @@ defmodule FacebookMessenger.User do
   }
 end
 
-defmodule FacebookMessenger.Messaging do
+defmodule FacebookMessenger.Postback do
   @moduledoc """
-  Facebook messaging structure, contains the sender, recepient and message info
+  Facebook postback structure
+  """
+
+  @derive [Poison.Encoder]
+  defstruct [:payload]
+
+  @type t :: %FacebookMessenger.Postback{
+    payload: String.t
+  }
+end
+
+defmodule FacebookMessenger.ElementPostbackButton do
+  @moduledoc """
+  Facebook postback button structure
+  """
+
+  @derive [Poison.Encoder] 
+  defstruct [:type, :title, :payload]
+
+  @type t :: %FacebookMessenger.ElementPostbackButton {
+    type: String.t,
+    title: String.t,
+    payload: String.t,
+  }
+end
+
+defmodule FacebookMessenger.GenericElement do
+  @moduledoc """
+  Facebook postback button structure
   """
   @derive [Poison.Encoder]
-  defstruct [:sender, :recipient, :timestamp, :message]
+  defstruct [:title, :item_url, :image_url, :subtitle, :buttons]
+
+  @type t :: %FacebookMessenger.GenericElement {
+    title: String.t,
+    item_url: String.t,
+    image_url: String.t,
+    subtitle: String.t,
+    buttons: FacebookMessenger.ElementPostbackButton.t,
+  }
+end
+
+defmodule FacebookMessenger.Messaging do
+  @moduledoc """
+  Facebook messaging structure, contains the sender, recepient and message info or a postback
+  """
+  @derive [Poison.Encoder]
+  defstruct [:sender, :recipient, :timestamp, :message, :postback]
 
   @type t :: %FacebookMessenger.Messaging{
     sender: FacebookMessenger.User.t,
     recipient: FacebookMessenger.User.t,
     timestamp: integer,
-    message: FacebookMessenger.Message.t
+    message: FacebookMessenger.Message.t,
+    postback: FacebookMessenger.Postback.t,
   }
 end
 
@@ -102,6 +147,16 @@ defmodule FacebookMessenger.Response do
     |> Enum.map(&( &1 |> Map.get(:sender) |> Map.get(:id)))
   end
 
+  @doc """
+  Return a list of postbacks from a 'FacebookMessenger.Response' 
+  """
+  @spec message_postback(FacebookMessenger.Reponse) :: [String.t]
+  def message_postback(%{entry: entries}) do
+    messaging = 
+    Enum.flat_map(entries, &Map.get(&1, :messaging))
+    |> Enum.map(&( &1 |> Map.get(:postback) |> Map.get(:payload)))
+  end
+
 
   defp decoding_map do
      messaging_parser =
@@ -109,6 +164,7 @@ defmodule FacebookMessenger.Response do
       "sender": %FacebookMessenger.User{},
       "recipient": %FacebookMessenger.User{},
       "message": %FacebookMessenger.Message{},
+      "postback": %FacebookMessenger.Postback{},
     }
     %FacebookMessenger.Response{
       "entry": [%FacebookMessenger.Entry{

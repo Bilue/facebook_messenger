@@ -28,7 +28,7 @@ defmodule FacebookMessenger.Sender do
     * :recepient - the recepient to send the message to
     * :elements - contains the elements to send 
   """
-  @spec send(String.t, Array.t) :: HTTPotion.Response.t
+  @spec send(String.t, [FacebookMessenger.GenericElement.t]) :: HTTPotion.Response.t
   def send(recepient, elements) do
     Logger.debug(url)
     Logger.info(template_payload(recepient, elements))
