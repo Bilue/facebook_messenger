@@ -44,13 +44,14 @@ defmodule FacebookMessenger.ElementPostbackButton do
   @moduledoc """
   Facebook postback button structure
   """
-  @derive [Poison.Encoder] 
-  defstruct [:type, :title, :payload]
+  @derive [Poison.Encoder]
+  defstruct [:type, :title, :payload, :url]
 
   @type t :: %FacebookMessenger.ElementPostbackButton {
     type: String.t,
     title: String.t,
     payload: String.t,
+    url: String.t
   }
 end
 
@@ -147,11 +148,11 @@ defmodule FacebookMessenger.Response do
   end
 
   @doc """
-  Return a list of postbacks from a 'FacebookMessenger.Response' 
+  Return a list of postbacks from a 'FacebookMessenger.Response'
   """
   @spec message_postback(FacebookMessenger.Reponse) :: [String.t]
   def message_postback(%{entry: entries}) do
-    messaging = 
+    messaging =
     Enum.flat_map(entries, &Map.get(&1, :messaging))
     |> Enum.map(&( &1 |> Map.get(:postback) |> Map.get(:payload)))
   end
